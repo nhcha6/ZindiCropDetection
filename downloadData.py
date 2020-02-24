@@ -66,23 +66,6 @@ date_time = []
 r = requests.get(f'https://api.radiant.earth/mlhub/v1/collections/{collectionId}/items', params={'limit':limit, 'bbox':bounding_box,'datetime':date_time}, headers=headers)
 collection = r.json()
 
-# This cell downloads all the multi-spectral images throughout the growing season for this competition.
-# The size of data is about 1.5 GB, and download time depends on your internet connection.
-# Note that you only need to run this cell and download the data once.
-for feature in collection.get('features', []):
-    for link in feature.get('links', []):
-        if link.get('rel') != 'source':
-            continue
-
-        r = requests.get(link['href'], headers=headers)
-        feature = r.json()
-        assets = feature.get('assets').keys()
-        tileid = feature.get('id').split('tile_')[-1][:2]
-        date = datetime.strftime(datetime.strptime(feature.get('properties')['datetime'], "%Y-%m-%dT%H:%M:%SZ"),
-                                 "%Y%m%d")
-        for asset in assets:
-            download_url = get_download_url(feature, asset, headers)
-            download_imagery(download_url, output_path, tileid, date)
 
 for feature in collection.get('features', []):
     tileid = feature.get('id').split('tile_')[-1][:2]
@@ -105,3 +88,21 @@ for feature in collection.get('features', []):
 for feature in collection.get('features', []):
     assets = feature.get('assets').keys()
     print("Feature", feature.get('id'), 'with the following assets', list(assets))
+
+# This cell downloads all the multi-spectral images throughout the growing season for this competition.
+# The size of data is about 1.5 GB, and download time depends on your internet connection.
+# Note that you only need to run this cell and download the data once.
+for feature in collection.get('features', []):
+    for link in feature.get('links', []):
+        if link.get('rel') != 'source':
+            continue
+
+        r = requests.get(link['href'], headers=headers)
+        feature = r.json()
+        assets = feature.get('assets').keys()
+        tileid = feature.get('id').split('tile_')[-1][:2]
+        date = datetime.strftime(datetime.strptime(feature.get('properties')['datetime'], "%Y-%m-%dT%H:%M:%SZ"),
+                                 "%Y%m%d")
+        for asset in assets:
+            download_url = get_download_url(feature, asset, headers)
+            download_imagery(download_url, output_path, tileid, date)
