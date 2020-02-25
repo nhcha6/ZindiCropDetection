@@ -3,7 +3,6 @@ import datetime
 import tifffile as tiff
 import numpy as np
 import glob
-import csv
 
 
 def load_file(fp):
@@ -30,32 +29,32 @@ dates = sorted(tile_dates[selected_tile])
 
 bands = ['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B09', 'B11', 'B12', 'CLD']
 
-pixelDataDict = {}
-fieldDict = {}
-cropDict = {}
 
 for tile in range(4):
     fieldFile = f'data/0{tile}/{tile}_field_id.tif'
     cropFile = f'data/0{tile}/{tile}_label.tif'
-    fieldDict[tile] = load_file(fieldFile)
-    cropDict[tile] = load_file(cropFile)
+    np.save(f'data/fieldArray{tile}.npy', np.asarray(load_file(fieldFile)))
+    np.save(f'data/cropArray{tile}.npy', np.asarray(load_file(fieldFile)))
 
-for tile in range(4):
-    numRows = len(fieldDict[tile])
-    numCol = len(fieldDict[tile][0])
-    tempMatrix = np.empty((numRows, numCol, len(dates), len(bands)))
+
+
+for tile in range(2,3):
+    numRows = np.shape(np.load(f'data/fieldArray{tile}.npy', allow_pickle=True))[0]
+    numCols = np.shape(np.load(f'data/fieldArray{tile}.npy', allow_pickle=True))[1]
+    tempMatrix = np.empty((numRows, numCols, len(dates), len(bands)))
     for dateIndex,date in enumerate(dates):
         dateString = ''.join(str(date.date()).split('-'))
         for bandIndex,band in enumerate(bands):
+            print('band')
             # load image
             tempBandFile = f'data/0{tile}/{dateString}/{tile}_{band}_{dateString}.tif'
             tempBandImage = load_file(tempBandFile)
             # convulution operation to check for features
-            print(tempBandImage)
             for row in range(numRows):
-                for col in range(numCol):
+                for col in range(numCols):
                     tempMatrix[row,col,dateIndex,bandIndex] = tempBandImage[row][col]
-    pixelDataDict[tile] = tempMatrix
+    np.save(f'data/pixelDataArray{tile}.npy', tempMatrix)
+
 
 
 
