@@ -1,12 +1,14 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
+import csv
 
 tile=2
 # import the test and train numpy arrays
 yTrain = np.load(f'data/trainCropData{tile}.npy')
 xTrain = np.load(f'data/trainPixelData{tile}.npy')
-
+xTest = np.load(f'data/testPixelData{tile}.npy')
+testFieldData = np.load(f'data/testFieldData{tile}.npy')
 
 # calculate number of pixels in train and test datasets
 print(np.shape(xTrain))
@@ -29,7 +31,7 @@ model = Sequential()
 # avoid overfitting while still ensuring enough information is stored to learn effectively.
 # keep return_sequence set to the default of false as are only concerned about the
 # output of the final sequence.
-model.add(LSTM(100, input_shape=(noDates, noBands)))
+model.add(LSTM(50, input_shape=(noDates, noBands)))
 
 # Output layer is a fully connected dense layer that outputs seven outputs batch (one
 # probability per crop type).
@@ -47,4 +49,29 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['acc'])
 # 50 of the train inputs and runs each through backprop algorithm.
 # verbose param sets how information regarding epoch progression is presented in
 # the console.
-model.fit(xTrain,yTrain, epochs=100, batch_size=50, verbose=2)
+model.fit(xTrain,yTrain, epochs=200, batch_size=30, verbose=2)
+
+# get predictions for all xTest data
+yPredicted = model.predict_proba(xTest, verbose=1)
+
+# loop through predictions and add to dictionary so predictions for pixels of the same field are together.
+fieldPredictionDict = {}
+for index, fieldNo in enumerate(testFieldData):
+    if fieldNo not in fieldPredictionDict.keys():
+        fieldPredictionDict[fieldNo] = [yPredicted[index]]
+    else:
+        fieldPredictionDict[fieldNo].append(yPredicted[index])
+
+# average predictions and write to file.
+with open('testPredictions.csv', mode='w') as employee_file:
+    writer = csv.writer(employee_file, delimiter=',')
+    writer.writerow(['Field Number', '1', '2', '3', '4', '5', '6', '7'])
+    for fieldNo, predictions in fieldPredictionDict.items():
+        predictionSum = np.zeros(7)
+        numFields = 0
+        for prediction in predictions:
+            predictionSum = np.add(predictionSum, prediction)
+            numFields += 1
+        entry = np.divide(predictionSum, numFields)
+        entry = np.insert(entry, 0, fieldNo)
+        writer.writerow(entry)
