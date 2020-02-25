@@ -34,7 +34,7 @@ for tile in range(2,3):
                 cropProb[cropArray[row,col]-1]=1
                 trainCropData.append(cropProb)
                 trainFieldData.append(fieldArray[row,col])
-            else:
+            elif fieldArray[row,col]!=0:
                 testPixelData.append(pixelDataArray[row,col])
                 testFieldData.append(fieldArray[row,col])
     print(testPixelData[0])

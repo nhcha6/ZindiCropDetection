@@ -49,7 +49,6 @@ for tile in range(2,3):
             # load image
             tempBandFile = f'data/0{tile}/{dateString}/{tile}_{band}_{dateString}.tif'
             tempBandImage = load_file(tempBandFile)
-            # convulution operation to check for features
             for row in range(numRows):
                 for col in range(numCols):
                     tempMatrix[row,col,dateIndex,bandIndex] = tempBandImage[row][col]

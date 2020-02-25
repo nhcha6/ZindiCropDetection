@@ -1,14 +1,20 @@
-import numpy
+import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
 
+tile=2
 # import the test and train numpy arrays
+yTrain = np.load(f'data/trainCropData{tile}.npy')
+xTrain = np.load(f'data/trainPixelData{tile}.npy')
+
 
 # calculate number of pixels in train and test datasets
-noTrainPixels = 10
+print(np.shape(xTrain))
+print(np.shape(yTrain))
+noTrainPixels = np.shape(xTrain)[0]
 noTestPixels = 2
-noDates = 13
-noBands = 13
+noDates = np.shape(xTrain)[1]
+noBands = np.shape(xTrain)[2]
 
 # define the model
 model = Sequential()
@@ -23,7 +29,7 @@ model = Sequential()
 # avoid overfitting while still ensuring enough information is stored to learn effectively.
 # keep return_sequence set to the default of false as are only concerned about the
 # output of the final sequence.
-model.add(LSTM(20, input_shape=(noDates, noBands)))
+model.add(LSTM(100, input_shape=(noDates, noBands)))
 
 # Output layer is a fully connected dense layer that outputs seven outputs batch (one
 # probability per crop type).
@@ -41,4 +47,4 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['acc'])
 # 50 of the train inputs and runs each through backprop algorithm.
 # verbose param sets how information regarding epoch progression is presented in
 # the console.
-model.fit(X,y, epochs=20, batch_size=50, verbose=2)
+model.fit(xTrain,yTrain, epochs=100, batch_size=50, verbose=2)
