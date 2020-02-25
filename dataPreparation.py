@@ -34,7 +34,7 @@ for tile in range(4):
     fieldFile = f'data/0{tile}/{tile}_field_id.tif'
     cropFile = f'data/0{tile}/{tile}_label.tif'
     np.save(f'data/fieldArray{tile}.npy', np.asarray(load_file(fieldFile)))
-    np.save(f'data/cropArray{tile}.npy', np.asarray(load_file(fieldFile)))
+    np.save(f'data/cropArray{tile}.npy', np.asarray(load_file(cropFile)))
 
 
 

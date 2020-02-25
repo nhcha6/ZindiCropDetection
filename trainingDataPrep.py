@@ -25,7 +25,8 @@ for tile in range(2,3):
     # crops with value != 0 are for training, otherwise they are for testing
     nrows,ncols = np.shape(cropArray)
     for row in range(nrows):
-        for col in range(nrows):
+        print(row)
+        for col in range(ncols):
             if cropArray[row,col]!=0:
                 trainPixelData.append(pixelDataArray[row,col])
                 cropProb=[0]*noCropTypes
@@ -36,9 +37,11 @@ for tile in range(2,3):
             else:
                 testPixelData.append(pixelDataArray[row,col])
                 testFieldData.append(fieldArray[row,col])
+    print(testPixelData[0])
 
     np.save(f'data/trainCropData{tile}.npy', np.asarray(trainCropData))
     np.save(f'data/trainFieldData{tile}.npy', np.asarray(trainFieldData))
     np.save(f'data/trainPixelData{tile}.npy', np.asarray(trainPixelData))
     np.save(f'data/testFieldData{tile}.npy', np.asarray(testFieldData))
     np.save(f'data/testPixelData{tile}.npy', np.asarray(testPixelData))
+
