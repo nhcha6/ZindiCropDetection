@@ -1,7 +1,5 @@
 import numpy as np
 
-fieldBool = False
-
 # get data from each tile
 for tile in range(2,3):
     fieldArray = np.load(f'data/fieldArray{tile}.npy', allow_pickle=True)
@@ -23,46 +21,22 @@ for tile in range(2,3):
     trainFieldData = []
     testFieldData = []
 
-    # alternative test data combines field data and takes descriptive statistics for given data/band.
-    # currently produces test and train dictionaries with keys as field types and a list of pixel data (dates and bands)
-    # as values. The first element of the train value is the crop type in matrix probability form.
-    if fieldBool:
-        fieldDictTrain = {}
-        fieldDictTest = {}
-        nrows, ncols = np.shape(cropArray)
-        for row in range(nrows):
-            print(row)
-            for col in range(ncols):
-                if cropArray[row,col]!=0:
-                    if fieldArray[row,col] not in fieldDictTrain.items():
-                        cropProb = [0] * noCropTypes
-                        # set 1 at index corresponding to that crop type
-                        cropProb[cropArray[row, col] - 1] = 1
-                        fieldDictTrain[fieldArray[row,col]] = [cropProb]
-                    fieldDictTrain[fieldArray[row,col]].add(pixelDataArray[row,col])
-                elif fieldArray[row,col]!=0:
-                    if fieldArray[row,col] not in fieldDictTest.items():
-                        fieldDictTest[fieldArray[row,col]] = [pixelDataArray[row,col]]
-                    else:
-                        fieldDictTest[fieldArray[row, col]].add(pixelDataArray[row, col])
-
     # crops with value != 0 are for training, otherwise they are for testing
-    if not fieldBool:
-        nrows,ncols = np.shape(cropArray)
-        for row in range(nrows):
-            print(row)
-            for col in range(ncols):
-                if cropArray[row,col]!=0:
-                    trainPixelData.append(pixelDataArray[row,col])
-                    cropProb=[0]*noCropTypes
-                    # set 1 at index corresponding to that crop type
-                    cropProb[cropArray[row,col]-1]=1
-                    trainCropData.append(cropProb)
-                    trainFieldData.append(fieldArray[row,col])
-                elif fieldArray[row,col]!=0:
-                    testPixelData.append(pixelDataArray[row,col])
-                    testFieldData.append(fieldArray[row,col])
-        print(testPixelData[0])
+    nrows,ncols = np.shape(cropArray)
+    for row in range(nrows):
+        print(row)
+        for col in range(ncols):
+            if cropArray[row,col]!=0:
+                trainPixelData.append(pixelDataArray[row,col])
+                cropProb=[0]*noCropTypes
+                # set 1 at index corresponding to that crop type
+                cropProb[cropArray[row,col]-1]=1
+                trainCropData.append(cropProb)
+                trainFieldData.append(fieldArray[row,col])
+            elif fieldArray[row,col]!=0:
+                testPixelData.append(pixelDataArray[row,col])
+                testFieldData.append(fieldArray[row,col])
+    print(testPixelData[0])
 
     np.save(f'data/trainCropData{tile}.npy', np.asarray(trainCropData))
     np.save(f'data/trainFieldData{tile}.npy', np.asarray(trainFieldData))
