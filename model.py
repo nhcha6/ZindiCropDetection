@@ -3,20 +3,18 @@ from keras.models import Sequential
 from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
 import csv
 
-tile=2
 # import the test and train numpy arrays
-yTrain = np.load(f'data/trainCropData{tile}.npy')
-xTrain = np.load(f'data/trainPixelData{tile}.npy')
-xTest = np.load(f'data/testPixelData{tile}.npy')
-testFieldData = np.load(f'data/testFieldData{tile}.npy')
+yTrain = np.load(f'data/fieldModel/trainCropData{tile}.npy')
+xTrain = np.load(f'data/fieldModel/trainPixelData{tile}.npy')
+xTest = np.load(f'data/fieldModel/testPixelData{tile}.npy')
+testFieldData = np.load(f'data/fieldModel/testFieldData{tile}.npy')
 
 # calculate number of pixels in train and test datasets
 print(np.shape(xTrain))
 print(np.shape(yTrain))
-noTrainPixels = np.shape(xTrain)[0]
-noTestPixels = 2
+noTrainFields = np.shape(xTrain)[0]
 noDates = np.shape(xTrain)[1]
-noBands = np.shape(xTrain)[2]
+sizeBandInfo = np.shape(xTrain)[2]
 
 # define the model
 model = Sequential()
@@ -31,7 +29,7 @@ model = Sequential()
 # avoid overfitting while still ensuring enough information is stored to learn effectively.
 # keep return_sequence set to the default of false as are only concerned about the
 # output of the final sequence.
-model.add(LSTM(50, input_shape=(noDates, noBands)))
+model.add(LSTM(50, input_shape=(noDates, sizeBandInfo)))
 
 # Output layer is a fully connected dense layer that outputs seven outputs batch (one
 # probability per crop type).
@@ -54,24 +52,17 @@ model.fit(xTrain,yTrain, epochs=200, batch_size=30, verbose=2)
 # get predictions for all xTest data
 yPredicted = model.predict_proba(xTest, verbose=1)
 
-# loop through predictions and add to dictionary so predictions for pixels of the same field are together.
+# loop through predictions and add to dictionary with field no.
 fieldPredictionDict = {}
 for index, fieldNo in enumerate(testFieldData):
-    if fieldNo not in fieldPredictionDict.keys():
-        fieldPredictionDict[fieldNo] = [yPredicted[index]]
-    else:
-        fieldPredictionDict[fieldNo].append(yPredicted[index])
+    fieldPredictionDict[fieldNo] = yPredicted[index]
 
 # average predictions and write to file.
-with open('testPredictions.csv', mode='w') as employee_file:
+with open('testPredictionsFieldModel.csv', mode='w') as employee_file:
     writer = csv.writer(employee_file, delimiter=',')
     writer.writerow(['Field Number', '1', '2', '3', '4', '5', '6', '7'])
     for fieldNo, predictions in fieldPredictionDict.items():
-        predictionSum = np.zeros(7)
-        numFields = 0
-        for prediction in predictions:
-            predictionSum = np.add(predictionSum, prediction)
-            numFields += 1
-        entry = np.divide(predictionSum, numFields)
-        entry = np.insert(entry, 0, fieldNo)
+        entry = []
+        entry.append(fieldNo)
+        entry.append(predictions)
         writer.writerow(entry)

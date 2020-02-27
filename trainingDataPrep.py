@@ -107,13 +107,12 @@ for tile in range(0,4):
     # add data from this tile to the combines arrays
     trainCropData.append(trainCropTemp)
     trainPixelData.append(trainPixelTemp)
-    trainFieldlData.append(trainFieldTemp)
+    trainFieldData.append(trainFieldTemp)
     testPixelData.append(testPixelTemp)
-    testFieldlData.append(testFieldTemp)
+    testFieldData.append(testFieldTemp)
 
 # convert to training/testing numpy array and write to file
 np.save(f'data/fieldModel/trainCropData.npy', np.asarray(trainCropData))
-np.save(f'data/fieldModel/trainFieldData.npy', np.asarray(trainFieldData))
 np.save(f'data/fieldModel/trainPixelData.npy', np.asarray(trainPixelData))
 np.save(f'data/fieldModel/testFieldData.npy', np.asarray(testFieldData))
 np.save(f'data/fieldModel/testPixelData.npy', np.asarray(testPixelData))
