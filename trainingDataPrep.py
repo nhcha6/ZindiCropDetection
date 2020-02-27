@@ -51,27 +51,27 @@ def createTrainTestData(fieldDict, cropData = None):
         pixelData.append(tempFieldData)
     return pixelData, newFieldData, newCropData
 
+'''create array of pixel data for training/testing, which is a list of pixel data points: ie. a list of corresponding to
+each date, containing a list of values for each band'''
+trainPixelData = []
+testPixelData = []
+
+'''create array of crop data, which is a list where each element is a list representing the probability of a pixel being
+each of the crop types. In training we know the crop type, so for each pixel this is a list of 0s and 1 at the index of
+the actual crop type of that pixel'''
+trainCropData = []
+noCropTypes=7
+noBands = 13
+
+'''also hold field data for future model, which is just the field number for each pixel'''
+trainFieldData = []
+testFieldData = []
+
 # get data from each tile
-for tile in range(2,3):
+for tile in range(0,4):
     fieldArray = np.load(f'data/fieldArray{tile}.npy', allow_pickle=True)
     cropArray = np.load(f'data/cropArray{tile}.npy', allow_pickle=True)
     pixelDataArray = np.load(f'data/pixelDataArray{tile}.npy', allow_pickle=True)
-
-    '''create array of pixel data for training/testing, which is a list of pixel data points: ie. a list of corresponding to
-    each date, containing a list of values for each band'''
-    trainPixelData = []
-    testPixelData = []
-
-    '''create array of crop data, which is a list where each element is a list representing the probability of a pixel being
-    each of the crop types. In training we know the crop type, so for each pixel this is a list of 0s and 1 at the index of
-    the actual crop type of that pixel'''
-    trainCropData = []
-    noCropTypes=7
-    noBands = 13
-
-    '''also hold field data for future model, which is just the field number for each pixel'''
-    trainFieldData = []
-    testFieldData = []
 
     """alternative test data combines field data and takes descriptive statistics for given data/band.
     currently produces test and train dictionaries with keys as field types and a list of pixel data (dates and bands)
@@ -94,22 +94,27 @@ for tile in range(2,3):
                     fieldDictTest[fieldArray[row, col]] = [pixelDataArray[row, col]]
                 else:
                     fieldDictTest[fieldArray[row, col]].add(pixelDataArray[row, col])
-    print(fieldDictTrain)
-    print(fieldDictTest)
 
     # call function to convert fieldDictTrain to group all data from different pixels together under each date in a
     # concatenated list
     fieldDictTrain, cropDataDict = groupPixelsByDate(fieldDictTrain, True)
     fieldDictTest, cropTestDummy = groupPixelsByDate(fieldDictTest, False)
 
-    # create the training and testing data to be saves as numpy arrays and used in the model
-    trainPixelData, trainFieldData, testCropData = createTrainTestData(fieldDictTrain, cropDataDict)
-    testPixelData, testFieldData, dummyCropData = createTrainTestData(fieldDictTrain, cropDataDict)
+    # create the training and testing data for the current tile to be saves as numpy arrays and used in the model
+    trainPixelTemp, trainFieldTemp, trainCropTemp = createTrainTestData(fieldDictTrain, cropDataDict)
+    testPixelTemp, testFieldTemp, dummyCropData = createTrainTestData(fieldDictTest, cropTestDict)
 
-    # convert to training/testing lists
-    np.save(f'data/fieldTest/trainCropData{tile}.npy', np.asarray(trainCropData))
-    np.save(f'data/fieldTest/trainFieldData{tile}.npy', np.asarray(trainFieldData))
-    np.save(f'data/fieldTest/trainPixelData{tile}.npy', np.asarray(trainPixelData))
-    np.save(f'data/fieldTest/testFieldData{tile}.npy', np.asarray(testFieldData))
-    np.save(f'data/fieldTest/testPixelData{tile}.npy', np.asarray(testPixelData))
+    # add data from this tile to the combines arrays
+    trainCropData.append(trainCropTemp)
+    trainPixelData.append(trainPixelTemp)
+    trainFieldlData.append(trainFieldTemp)
+    testPixelData.append(testPixelTemp)
+    testFieldlData.append(testFieldTemp)
+
+# convert to training/testing numpy array and write to file
+np.save(f'data/fieldModel/trainCropData.npy', np.asarray(trainCropData))
+np.save(f'data/fieldModel/trainFieldData.npy', np.asarray(trainFieldData))
+np.save(f'data/fieldModel/trainPixelData.npy', np.asarray(trainPixelData))
+np.save(f'data/fieldModel/testFieldData.npy', np.asarray(testFieldData))
+np.save(f'data/fieldModel/testPixelData.npy', np.asarray(testPixelData))
 
