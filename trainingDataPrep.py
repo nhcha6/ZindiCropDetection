@@ -49,7 +49,7 @@ def createTrainTestData(fieldDict, cropData = None):
                 newDateData.extend(summaryFieldDate)
             tempFieldData.append(newDateData)
         pixelData.append(tempFieldData)
-    return pixelData,newFieldData, newCropData
+    return pixelData, newFieldData, newCropData
 
 # get data from each tile
 for tile in range(2,3):
@@ -101,6 +101,10 @@ for tile in range(2,3):
     # concatenated list
     fieldDictTrain, cropDataDict = groupPixelsByDate(fieldDictTrain, True)
     fieldDictTest, cropTestDummy = groupPixelsByDate(fieldDictTest, False)
+
+    # create the training and testing data to be saves as numpy arrays and used in the model
+    trainPixelData, trainFieldData, testCropData = createTrainTestData(fieldDictTrain, cropDataDict)
+    testPixelData, testFieldData, dummyCropData = createTrainTestData(fieldDictTrain, cropDataDict)
 
     # convert to training/testing lists
     np.save(f'data/trainCropData{tile}.npy', np.asarray(trainCropData))
