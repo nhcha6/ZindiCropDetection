@@ -3,12 +3,13 @@ from keras.models import Sequential
 from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
 import csv
 
-tile=2
+'''uses data from individual pixels of all tiles'''
+
 # import the test and train numpy arrays
-yTrain = np.load(f'data/trainCropData{tile}.npy')
-xTrain = np.load(f'data/trainPixelData{tile}.npy')
-xTest = np.load(f'data/testPixelData{tile}.npy')
-testFieldData = np.load(f'data/testFieldData{tile}.npy')
+yTrain = np.load(f'data/trainCropData.npy')
+xTrain = np.load(f'data/trainPixelData.npy')
+xTest = np.load(f'data/testPixelData.npy')
+testFieldData = np.load(f'data/testFieldData.npy')
 
 # calculate number of pixels in train and test datasets
 print(np.shape(xTrain))
