@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import skew
 
-# function to convert fieldDictTrain to group all data from different pixels together under each date.
+# function to convert fieldDictTrain to group all data from pixels of the same field together under each date.
 def groupPixelsByDate(fieldDictOld, trainFlag):
     fieldDictNew = {}
     cropData = {}
@@ -19,6 +19,37 @@ def groupPixelsByDate(fieldDictOld, trainFlag):
             newFieldData.append(newDateData)
         fieldDictNew[fieldNo] = newFieldData
     return fieldDictNew, cropData
+
+# function to take dictionary with data grouped by field and date, and converts it to the form required for the training
+# of the model
+def createTrainTestData(fieldDict, cropData = None):
+    newFieldData = []
+    pixelData = []
+    newCropData = []
+    for fieldNo, fieldData in fieldDict.items():
+        newFieldData.append(fieldNo)
+        if cropData != None:
+            newCropData.append(cropData[fieldNo])
+        tempFieldData = []
+        for dateData in fieldData:
+            newDateData = []
+            for i in range(noBands):
+                j = i
+                # change to commonFieldDate
+                commonFieldDate = []
+                summaryFieldDate = []
+                while(j<len(dateData)):
+                    commonFieldDate.append(dateData[j])
+                    j+=noBands
+                numpy = np.asarray(commonFieldDate)
+                summaryFieldDate.append(np.mean(numpy))
+                summaryFieldDate.append(np.median(numpy))
+                summaryFieldDate.append(np.std(numpy))
+                summaryFieldDate.append(skew(numpy))
+                newDateData.extend(summaryFieldDate)
+            tempFieldData.append(newDateData)
+        pixelData.append(tempFieldData)
+    return pixelData,newFieldData, newCropData
 
 # get data from each tile
 for tile in range(2,3):
