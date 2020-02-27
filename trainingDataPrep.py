@@ -107,9 +107,9 @@ for tile in range(2,3):
     testPixelData, testFieldData, dummyCropData = createTrainTestData(fieldDictTrain, cropDataDict)
 
     # convert to training/testing lists
-    np.save(f'data/trainCropData{tile}.npy', np.asarray(trainCropData))
-    np.save(f'data/trainFieldData{tile}.npy', np.asarray(trainFieldData))
-    np.save(f'data/trainPixelData{tile}.npy', np.asarray(trainPixelData))
-    np.save(f'data/testFieldData{tile}.npy', np.asarray(testFieldData))
-    np.save(f'data/testPixelData{tile}.npy', np.asarray(testPixelData))
+    np.save(f'data/fieldTest/trainCropData{tile}.npy', np.asarray(trainCropData))
+    np.save(f'data/fieldTest/trainFieldData{tile}.npy', np.asarray(trainFieldData))
+    np.save(f'data/fieldTest/trainPixelData{tile}.npy', np.asarray(trainPixelData))
+    np.save(f'data/fieldTest/testFieldData{tile}.npy', np.asarray(testFieldData))
+    np.save(f'data/fieldTest/testPixelData{tile}.npy', np.asarray(testPixelData))
 
