@@ -4,10 +4,10 @@ from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
 import csv
 
 # import the test and train numpy arrays
-yTrain = np.load(f'data/fieldModel/trainCropData{tile}.npy')
-xTrain = np.load(f'data/fieldModel/trainPixelData{tile}.npy')
-xTest = np.load(f'data/fieldModel/testPixelData{tile}.npy')
-testFieldData = np.load(f'data/fieldModel/testFieldData{tile}.npy')
+yTrain = np.load(f'data/fieldModel/trainCropData.npy', allow_pickle=True)
+xTrain = np.load(f'data/fieldModel/trainPixelData.npy', allow_pickle=True)
+xTest = np.load(f'data/fieldModel/testPixelData.npy', allow_pickle=True)
+testFieldData = np.load(f'data/fieldModel/testFieldData.npy', allow_pickle=True)
 
 # calculate number of pixels in train and test datasets
 print(np.shape(xTrain))
@@ -29,7 +29,7 @@ model = Sequential()
 # avoid overfitting while still ensuring enough information is stored to learn effectively.
 # keep return_sequence set to the default of false as are only concerned about the
 # output of the final sequence.
-model.add(LSTM(50, input_shape=(noDates, sizeBandInfo)))
+model.add(LSTM(20, input_shape=(noDates, sizeBandInfo)))
 
 # Output layer is a fully connected dense layer that outputs seven outputs batch (one
 # probability per crop type).
@@ -47,7 +47,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['acc'])
 # 50 of the train inputs and runs each through backprop algorithm.
 # verbose param sets how information regarding epoch progression is presented in
 # the console.
-model.fit(xTrain,yTrain, epochs=200, batch_size=30, verbose=2)
+model.fit(xTrain,yTrain, epochs=100, batch_size=10, verbose=2)
 
 # get predictions for all xTest data
 yPredicted = model.predict_proba(xTest, verbose=1)
@@ -62,7 +62,5 @@ with open('testPredictionsFieldModel.csv', mode='w') as employee_file:
     writer = csv.writer(employee_file, delimiter=',')
     writer.writerow(['Field Number', '1', '2', '3', '4', '5', '6', '7'])
     for fieldNo, predictions in fieldPredictionDict.items():
-        entry = []
-        entry.append(fieldNo)
-        entry.append(predictions)
+        entry = np.insert(predictions, 0, fieldNo)
         writer.writerow(entry)

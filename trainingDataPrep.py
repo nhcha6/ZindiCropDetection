@@ -102,14 +102,14 @@ for tile in range(0,4):
 
     # create the training and testing data for the current tile to be saves as numpy arrays and used in the model
     trainPixelTemp, trainFieldTemp, trainCropTemp = createTrainTestData(fieldDictTrain, cropDataDict)
-    testPixelTemp, testFieldTemp, dummyCropData = createTrainTestData(fieldDictTest, cropTestDict)
+    testPixelTemp, testFieldTemp, dummyCropData = createTrainTestData(fieldDictTest)
 
     # add data from this tile to the combines arrays
-    trainCropData.append(trainCropTemp)
-    trainPixelData.append(trainPixelTemp)
-    trainFieldData.append(trainFieldTemp)
-    testPixelData.append(testPixelTemp)
-    testFieldData.append(testFieldTemp)
+    trainCropData = trainCropData + trainCropTemp
+    trainPixelData = trainPixelData + trainPixelTemp
+    trainFieldData = trainFieldData + trainFieldTemp
+    testPixelData = testPixelData + testPixelTemp
+    testFieldData = testFieldData + testFieldTemp
 
 # convert to training/testing numpy array and write to file
 np.save(f'data/fieldModel/trainCropData.npy', np.asarray(trainCropData))
