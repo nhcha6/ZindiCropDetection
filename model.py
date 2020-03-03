@@ -6,10 +6,10 @@ import csv
 '''uses data from individual pixels of all tiles'''
 
 # import the test and train numpy arrays
-yTrain = np.load(f'data/trainCropData.npy')
-xTrain = np.load(f'data/trainPixelData.npy')
-xTest = np.load(f'data/testPixelData.npy')
-testFieldData = np.load(f'data/testFieldData.npy')
+yTrain = np.load(f'data/master/trainCropData.npy')
+xTrain = np.load(f'data/master/trainPixelData.npy')
+xTest = np.load(f'data/master/testPixelData.npy')
+testFieldData = np.load(f'data/master/testFieldData.npy')
 
 # calculate number of pixels in train and test datasets
 print(np.shape(xTrain))
@@ -32,7 +32,7 @@ model = Sequential()
 # avoid overfitting while still ensuring enough information is stored to learn effectively.
 # keep return_sequence set to the default of false as are only concerned about the
 # output of the final sequence.
-model.add(LSTM(50, input_shape=(noDates, noBands)))
+model.add(LSTM(20, input_shape=(noDates, noBands)))
 
 # Output layer is a fully connected dense layer that outputs seven outputs batch (one
 # probability per crop type).
@@ -50,7 +50,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['acc'])
 # 50 of the train inputs and runs each through backprop algorithm.
 # verbose param sets how information regarding epoch progression is presented in
 # the console.
-model.fit(xTrain,yTrain, epochs=200, batch_size=30, verbose=2)
+model.fit(xTrain,yTrain, epochs=100, batch_size=100, verbose=2)
 
 # get predictions for all xTest data
 yPredicted = model.predict_proba(xTest, verbose=1)
