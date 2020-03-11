@@ -55,7 +55,7 @@ with open('testPredictions.csv', mode='w') as employee_file:
         # 50 of the train inputs and runs each through backprop algorithm.
         # verbose param sets how information regarding epoch progression is presented in
         # the console.
-        model.fit(xTrain,yTrain, epochs=5, batch_size=100, verbose=2)
+        model.fit(xTrain,yTrain, epochs=30, batch_size=100, verbose=2)
 
         # get predictions for all xTest data
         yPredicted = model.predict_proba(xTest, verbose=1)
@@ -63,8 +63,6 @@ with open('testPredictions.csv', mode='w') as employee_file:
         # loop through predictions and add to dictionary so predictions for pixels of the same field are together.
         fieldPredictionDict = {}
         for index, fieldNo in enumerate(testFieldData):
-            if fieldNo==6:
-                print(tile)
             if fieldNo not in fieldPredictionDict.keys():
                 fieldPredictionDict[fieldNo] = [yPredicted[index]]
             else:
