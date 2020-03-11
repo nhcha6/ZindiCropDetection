@@ -42,9 +42,9 @@ for tile in range(0,4):
                 testFieldData.append(fieldArray[row,col])
 
 
-np.save(f'data/master/trainCropData.npy', np.asarray(trainCropData))
-np.save(f'data/master/trainFieldData.npy', np.asarray(trainFieldData))
-np.save(f'data/master/trainPixelData.npy', np.asarray(trainPixelData))
-np.save(f'data/master/testFieldData.npy', np.asarray(testFieldData))
-np.save(f'data/master/testPixelData.npy', np.asarray(testPixelData))
+    np.save(f'data/master/trainCropData{tile}.npy', np.asarray(trainCropData))
+    np.save(f'data/master/trainFieldData{tile}.npy', np.asarray(trainFieldData))
+    np.save(f'data/master/trainPixelData{tile}.npy', np.asarray(trainPixelData))
+    np.save(f'data/master/testFieldData{tile}.npy', np.asarray(testFieldData))
+    np.save(f'data/master/testPixelData{tile}.npy', np.asarray(testPixelData))
 
