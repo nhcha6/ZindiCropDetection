@@ -63,10 +63,10 @@ with open('testPredictions.csv', mode='w') as employee_file:
         # loop through predictions and add to dictionary so predictions for pixels of the same field are together.
         fieldPredictionDict = {}
         for index, fieldNo in enumerate(testFieldData):
-        if fieldNo not in fieldPredictionDict.keys():
-            fieldPredictionDict[fieldNo] = [yPredicted[index]]
-        else:
-            fieldPredictionDict[fieldNo].append(yPredicted[index])
+            if fieldNo not in fieldPredictionDict.keys():
+                fieldPredictionDict[fieldNo] = [yPredicted[index]]
+            else:
+                fieldPredictionDict[fieldNo].append(yPredicted[index])
 
 
         for fieldNo, predictions in fieldPredictionDict.items():
