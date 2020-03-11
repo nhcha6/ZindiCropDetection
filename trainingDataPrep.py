@@ -1,25 +1,27 @@
 import numpy as np
 
-'''concatonates data of individual pixels from all tiles into training and testing data'''
+'''concatonates data of individual pixels from each tile into training and testing data for each tile'''
 
-
-'''create array of pixel data for training/testing, which is a list of pixel data points: ie. a list of corresponding to
-each date, containing a list of values for each band'''
-trainPixelData = []
-testPixelData = []
-
-'''create array of crop data, which is a list where each element is a list representing the probability of a pixel being
-each of the crop types. In training we know the crop type, so for each pixel this is a list of 0s and 1 at the index of
-the actual crop type of that pixel'''
-trainCropData = []
-noCropTypes = 7
-
-'''also hold field data for future model, which is just the field number for each pixel'''
-trainFieldData = []
-testFieldData = []
 
 # get data from each tile
 for tile in range(0,4):
+
+    '''create array of pixel data for training/testing, which is a list of pixel data points: ie. a list of corresponding to
+    each date, containing a list of values for each band'''
+    trainPixelData = []
+    testPixelData = []
+
+    '''create array of crop data, which is a list where each element is a list representing the probability of a pixel being
+    each of the crop types. In training we know the crop type, so for each pixel this is a list of 0s and 1 at the index of
+    the actual crop type of that pixel'''
+    trainCropData = []
+    noCropTypes = 7
+
+    '''also hold field data for future model, which is just the field number for each pixel'''
+    trainFieldData = []
+    testFieldData = []
+
+
     fieldArray = np.load(f'data/fieldArray{tile}.npy', allow_pickle=True)
     cropArray = np.load(f'data/cropArray{tile}.npy', allow_pickle=True)
     pixelDataArray = np.load(f'data/pixelDataArray{tile}.npy', allow_pickle=True)
@@ -40,7 +42,6 @@ for tile in range(0,4):
             elif fieldArray[row,col]!=0:
                 testPixelData.append(pixelDataArray[row,col])
                 testFieldData.append(fieldArray[row,col])
-
 
     np.save(f'data/master/trainCropData{tile}.npy', np.asarray(trainCropData))
     np.save(f'data/master/trainFieldData{tile}.npy', np.asarray(trainFieldData))
