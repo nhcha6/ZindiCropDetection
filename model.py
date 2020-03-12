@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import Sequential
-from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking
+from keras.layers import LSTM, TimeDistributed, Dense, Bidirectional, Masking, Dropout
 import csv
 
 '''uses data from individual pixels of all tiles'''
@@ -37,7 +37,11 @@ with open('testPredictions.csv', mode='w') as employee_file:
         # avoid overfitting while still ensuring enough information is stored to learn effectively.
         # keep return_sequence set to the default of false as are only concerned about the
         # output of the final sequence.
-        model.add(LSTM(20, input_shape=(noDates, noBands)))
+        model.add(LSTM(30, input_shape=(noDates, noBands)))
+
+        model.add(Dropout(0.5, input_shape=(60,)))
+        model.add(Dense(60, activation = 'sigmoid'))
+
 
         # Output layer is a fully connected dense layer that outputs seven outputs batch (one
         # probability per crop type).
@@ -55,7 +59,7 @@ with open('testPredictions.csv', mode='w') as employee_file:
         # 50 of the train inputs and runs each through backprop algorithm.
         # verbose param sets how information regarding epoch progression is presented in
         # the console.
-        model.fit(xTrain,yTrain, epochs=30, batch_size=100, verbose=2)
+        model.fit(xTrain,yTrain, epochs=50, batch_size=50, verbose=2)
 
         # get predictions for all xTest data
         yPredicted = model.predict_proba(xTest, verbose=1)
